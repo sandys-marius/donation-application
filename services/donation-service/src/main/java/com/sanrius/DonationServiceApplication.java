@@ -10,4 +10,6 @@ public class DonationServiceApplication {
 		SpringApplication.run(DonationServiceApplication.class, args);
 	}
 
+
+	// Shortcuts here -> https://youtu.be/QYO5_riePOQ?si=-f9y0ASE1odOmR7L
 }
