@@ -1,5 +1,6 @@
 package com.sanrius.controllers;
 
+import com.sanrius.dto.UpdateDonationRequest;
 import com.sanrius.model.Donation;
 import com.sanrius.services.DonationService;
 import java.util.List;
@@ -22,7 +23,6 @@ public class DonationController {
         return ResponseEntity.ok(donationService.getDonation(donationId));
     }
 
-
     @GetMapping("/all")
     public ResponseEntity<List<Donation>> getDonations() {
         return ResponseEntity.ok(donationService.getDonations());
@@ -31,6 +31,14 @@ public class DonationController {
     @DeleteMapping("/delete")
     public ResponseEntity<String> deleteDonation(@RequestParam String donationId) {
         return ResponseEntity.ok(donationService.deleteDonation(donationId));
+    }
+
+    @PutMapping("/update/{donationId}")
+    public ResponseEntity<Donation> updateDonation(
+            @PathVariable String donationId,
+            @RequestBody UpdateDonationRequest request
+    ) {
+        return ResponseEntity.ok(donationService.updateDonation(donationId, request));
     }
 
 
