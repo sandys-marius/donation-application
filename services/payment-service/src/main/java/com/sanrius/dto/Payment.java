@@ -33,8 +33,9 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     private PaymentStatusEnum paymentStatus;
 
-
-
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column(name = "user_id")
+    private Long userId;
 }

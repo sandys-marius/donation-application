@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.sanrius.utils.PaymentStatusEnum.PAID;
 
@@ -41,12 +42,14 @@ public class PaymentService {
                 throw new RuntimeException(e);
             }
 
-
             String paymentsStatus = updatedSession.getPaymentStatus();
             log.info("PaymentStatus: {}", paymentsStatus);
             if (paymentsStatus.equalsIgnoreCase("paid")) {
                 log.info("Session is paid");
                 log.info("Continuing with the payment process");
+
+
+
                 break;
             } else if (paymentsStatus.equalsIgnoreCase("unpaid")) {
                 log.info("Unpaid Checkout");
@@ -59,15 +62,24 @@ public class PaymentService {
             sleep();
         }
 
-        // Got that the ID and the customerEmail was [null],
+        // When gets here the payment will be successful,
+        // that's why we should store the payment in the db,
+        // but also add the userId that made the donation
+
+        // 1. Request the userId of the user from the user-service -> request.getUserEmail()
+
+        // Got that the ID and the customerEmail were [null],
         // because I was getting the info from the 'session' not 'updatedSession'
-        // TODO: add the payment session in the db
         Payment payment = Payment.builder()
                 .sessionId(updatedSession.getId())
                 .paymentIntentId(updatedSession.getPaymentIntent())
                 .amount(request.getAmount())
                 .currency(updatedSession.getCurrency())
-                .customerEmail(updatedSession.getCustomerDetails().getEmail())
+                .customerEmail(session.getCustomerEmail())
+                // I used this implementation before changing and putting the email when creating the session.
+                // I did this for future improvements,
+                // and for the user after he makes a successful donation to get a email
+                // .customerEmail(updatedSession.getCustomerDetails().getEmail())
                 .paymentStatus(PAID)
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -76,4 +88,20 @@ public class PaymentService {
         paymentRepository.save(payment);
         log.info("Successfully saved the payment");
     }
+
+    /**
+     * Used by the <b>user-service</b> when fetching the info about the user donation-history
+     * @param userId used to identify the user whose info should be returned
+     * @return the donation-history of the user
+     */
+    public List<Payment> getUsersDonationHistory(Long userId) {
+        List<Payment> donationList = paymentRepository.findAll().stream()
+                .filter(payment -> payment.getUserId().equals(userId))
+                .toList();
+
+        log.info("The paymentList of the user with the ID: {}; {}", userId, donationList);
+        return donationList;
+    }
+
+
 }

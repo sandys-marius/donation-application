@@ -6,10 +6,7 @@ import com.stripe.Stripe;
 import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.annotation.PostConstruct;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/checkout")
@@ -32,5 +29,6 @@ public class CheckoutController {
     public ResponseEntity<String> createCheckout(@RequestBody CheckoutRequest request) {
         return ResponseEntity.ok(checkoutService.createCheckout(request));
     }
+
 
 }

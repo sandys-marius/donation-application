@@ -8,7 +8,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @Slf4j
 @Service
@@ -64,4 +66,5 @@ public class DonationService {
         // Save and return the updated donation
         return donationRepository.save(donation);
     }
+
 }

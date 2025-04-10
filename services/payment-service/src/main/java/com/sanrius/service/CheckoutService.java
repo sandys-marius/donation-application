@@ -36,6 +36,7 @@ public class CheckoutService {
                                                 .build())
                                         .setQuantity(1L)
                                         .build())
+                        .setCustomerEmail(request.getUserEmail())
                         .setSuccessUrl("https://example.com")
                         .setCancelUrl("https://cancel.com")
                         .setMode(SessionCreateParams.Mode.PAYMENT)
