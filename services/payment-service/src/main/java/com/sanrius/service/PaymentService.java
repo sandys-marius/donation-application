@@ -48,12 +48,9 @@ public class PaymentService {
                 log.info("Session is paid");
                 log.info("Continuing with the payment process");
 
-
-
                 break;
             } else if (paymentsStatus.equalsIgnoreCase("unpaid")) {
                 log.info("Unpaid Checkout");
-                throw new NoCreditException("Not enough credits for the user with the email: " + updatedSession.getCustomerDetails().getEmail());
             } else if ("no_payment_required".equalsIgnoreCase(paymentsStatus)) {
                 // Maybe a free item
                 log.info("This is a free item");
@@ -62,24 +59,22 @@ public class PaymentService {
             sleep();
         }
 
+
+        log.info("Session: {}", updatedSession);
+
         // When gets here the payment will be successful,
         // that's why we should store the payment in the db,
         // but also add the userId that made the donation
 
         // 1. Request the userId of the user from the user-service -> request.getUserEmail()
 
-        // Got that the ID and the customerEmail were [null],
-        // because I was getting the info from the 'session' not 'updatedSession'
         Payment payment = Payment.builder()
                 .sessionId(updatedSession.getId())
                 .paymentIntentId(updatedSession.getPaymentIntent())
                 .amount(request.getAmount())
                 .currency(updatedSession.getCurrency())
                 .customerEmail(session.getCustomerEmail())
-                // I used this implementation before changing and putting the email when creating the session.
-                // I did this for future improvements,
-                // and for the user after he makes a successful donation to get a email
-                // .customerEmail(updatedSession.getCustomerDetails().getEmail())
+                 .customerEmail(updatedSession.getCustomerDetails().getEmail())
                 .paymentStatus(PAID)
                 .updatedAt(LocalDateTime.now())
                 .build();
