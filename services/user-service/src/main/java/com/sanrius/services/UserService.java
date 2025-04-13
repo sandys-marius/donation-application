@@ -1,11 +1,12 @@
 package com.sanrius.services;
 
 import com.sanrius.dto.CreateUserRequest;
+import com.sanrius.kafka.KafkaProducerService;
 import com.sanrius.model.User;
 import com.sanrius.repositories.UserRepository;
 import com.sanrius.utils.Donation;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,9 +16,11 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final KafkaProducerService producerService;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, KafkaProducerService producerService) {
         this.userRepository = userRepository;
+        this.producerService = producerService;
     }
 
     public User getUser(Long userId) {
@@ -61,8 +64,10 @@ public class UserService {
         return user.getUserId();
     }
 
-    public List<Donation> getUserDonationService(Long userId) {
+    public List<Donation> getUserDonationHistory(String userId) {
         // 1. Make a request to the payment-service from which to get the donation-history
+        producerService.requestUserDonationHistory(userId);
         return null;
     }
+
 }

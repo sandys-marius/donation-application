@@ -1,6 +1,7 @@
 package com.sanrius.controllers;
 
 import com.sanrius.dto.CreateUserRequest;
+import com.sanrius.kafka.KafkaProducerService;
 import com.sanrius.model.User;
 import com.sanrius.services.UserService;
 import com.sanrius.utils.Donation;
@@ -14,9 +15,11 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final KafkaProducerService producerService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, KafkaProducerService producerService) {
         this.userService = userService;
+        this.producerService = producerService;
     }
 
     @GetMapping("/{userId}")
@@ -41,7 +44,12 @@ public class UserController {
 
 
     @GetMapping("/donation-history/{userId}")
-    public ResponseEntity<List<Donation>> getUsers(@PathVariable("userId") Long userId) {
-        return ResponseEntity.ok(userService.getUserDonationService(userId));
+    public ResponseEntity<List<Donation>> getUsers(@PathVariable("userId") String userId) {
+        return ResponseEntity.ok(userService.getUserDonationHistory(userId));
+    }
+
+    @GetMapping("/test")
+    public void testKafka() {
+        producerService.checkPaymentServiceHealth();
     }
 }

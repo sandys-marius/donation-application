@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity(name = "payments")
 public class Payment {
 

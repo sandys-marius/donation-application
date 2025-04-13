@@ -94,7 +94,7 @@ public class PaymentService {
                 .filter(payment -> payment.getUserId().equals(userId))
                 .toList();
 
-        log.info("The paymentList of the user with the ID: {}; {}", userId, donationList);
+        log.info("The paymentList of the user with the ID {}; {}", userId, donationList);
         return donationList;
     }
 
