@@ -90,12 +90,12 @@ public class PaymentService {
      * @return the donation-history of the user
      */
     public List<Payment> getUsersDonationHistory(Long userId) {
-        List<Payment> donationList = paymentRepository.findAll().stream()
+        List<Payment> donationHistoryList = paymentRepository.findAll().stream()
                 .filter(payment -> payment.getUserId().equals(userId))
                 .toList();
 
-        log.info("The paymentList of the user with the ID {}; {}", userId, donationList);
-        return donationList;
+        log.info("The paymentList of the user with the ID {}; {}", userId, donationHistoryList);
+        return donationHistoryList;
     }
 
 

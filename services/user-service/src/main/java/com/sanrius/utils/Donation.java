@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class Donation {
-
     private Long donationId;
     private String title;
     private String description;

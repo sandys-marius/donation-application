@@ -5,6 +5,7 @@ import com.sanrius.kafka.KafkaProducerService;
 import com.sanrius.model.User;
 import com.sanrius.services.UserService;
 import com.sanrius.utils.Donation;
+import com.sanrius.utils.Payment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,7 +45,7 @@ public class UserController {
 
 
     @GetMapping("/donation-history/{userId}")
-    public ResponseEntity<List<Donation>> getUsers(@PathVariable("userId") String userId) {
+    public ResponseEntity<List<Payment>> getUsers(@PathVariable("userId") String userId) {
         return ResponseEntity.ok(userService.getUserDonationHistory(userId));
     }
 
