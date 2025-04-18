@@ -2,7 +2,6 @@ package com.sanrius.utils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sanrius.utils.PaymentStatusEnum;
-import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;

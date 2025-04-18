@@ -1,5 +1,6 @@
 package com.sanrius.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -14,11 +15,31 @@ import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Configuration
 public class KafkaConsumerConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServer;
+
+    @Bean
+    KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Object>> kafkaListenerContainerFactory() {
+        log.info("In the kafkaListenerContainerFactory");
+        ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory());
+        factory.setConcurrency(3);
+        factory.getContainerProperties().setPollTimeout(3000);
+        factory.setBatchListener(true);
+        log.info("KafkaListenerContainerFactory: {}", factory);
+        log.info("Returning the KafkaListenerContainerFactory");
+        return factory;
+    }
+
+    // Allows us to send kafka producers
+    @Bean
+    public ConsumerFactory<String, Object> consumerFactory() {
+        return new DefaultKafkaConsumerFactory<>(consumerConfig());
+    }
 
     public Map<String, Object> consumerConfig() {
         HashMap<String, Object> props = new HashMap<>();
@@ -29,20 +50,15 @@ public class KafkaConsumerConfig {
         return props;
     }
 
-    // Allows us to send kafka producers
-    @Bean
-    public ConsumerFactory<String, Object> consumerFactory() {
-        return new DefaultKafkaConsumerFactory<>(consumerConfig());
-    }
 
-    @Bean
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Object>> factory(
-            ConsumerFactory<String, Object> consumerFactory
-    ) {
-        ConcurrentKafkaListenerContainerFactory<String, Object> factory =
-                new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory);
-        return factory;
-    }
+//    @Bean
+//    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Object>> factory(
+//            ConsumerFactory<String, Object> consumerFactory
+//    ) {
+//        ConcurrentKafkaListenerContainerFactory<String, Object> factory =
+//                new ConcurrentKafkaListenerContainerFactory<>();
+//        factory.setConsumerFactory(consumerFactory);
+//        return factory;
+//    }
 
 }

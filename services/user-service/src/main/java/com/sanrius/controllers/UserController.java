@@ -23,25 +23,10 @@ public class UserController {
         this.producerService = producerService;
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<User> getUser(@PathVariable("userId") Long userId) {
-        return ResponseEntity.ok(userService.getUser(userId));
-    }
-
-    @GetMapping("/all")
-    public ResponseEntity<List<User>> getUsers() {
-        return ResponseEntity.ok(userService.getUsers());
-    }
-
-    @PostMapping()
-    public ResponseEntity<User> createUser(@RequestBody CreateUserRequest request) {
-        return ResponseEntity.ok(userService.createUser(request));
-    }
-
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<String> deleteUser(@PathVariable("userId") Long userId) {
-        return ResponseEntity.ok(userService.deleteUser(userId));
-    }
+//    @GetMapping("/{userId}")
+//    public ResponseEntity<User> getUser(@PathVariable("userId") Long userId) {
+//        return ResponseEntity.ok(userService.getUser(userId));
+//    }
 
 
     @GetMapping("/donation-history/{userId}")

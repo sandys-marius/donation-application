@@ -1,16 +1,16 @@
 package com.sanrius.kafka;
 
 import com.google.gson.Gson;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-
 @Slf4j
+@RequiredArgsConstructor
 @Component
 public class KafkaListeners {
 
@@ -19,10 +19,6 @@ public class KafkaListeners {
     private final KafkaProducerService producerService;
 
 
-    public KafkaListeners(KafkaTemplate<String, Object> kafkaTemplate, KafkaProducerService producerService) {
-        this.kafkaTemplate = kafkaTemplate;
-        this.producerService = producerService;
-    }
 
     @KafkaListener(topics = "check-payment-service-health", groupId = "groupId")
     public void getHealthRequest(String testData) {
@@ -38,5 +34,29 @@ public class KafkaListeners {
         log.info("Parsed userId: {}", parsedUserId);
         producerService.sendUserDonationHistory(parsedUserId);
     }
+
+//    @KafkaListener(topics = "topic.request")
+//    public void listen(ConsumerRecord<String, String> record) {
+//        log.info("THE SERVICE B GOT THE REQUEST");
+//        String correlationId = new String(record.headers().lastHeader("correlationId").value());
+//        String replyTopic = new String(record.headers().lastHeader("replyTopic").value());
+//
+//        String response = process(record.value());
+//
+//        ProducerRecord<String, String> responseRecord = new ProducerRecord<>(replyTopic, response);
+//        responseRecord.headers().add("correlationId", correlationId.getBytes());
+//        testTemplate.send(responseRecord);
+//        log.info("SENDING BACK THE REPLY");
+//    }
+//
+//    private String process(String incomingMessage) {
+//        // Simulate doing something with the message
+//        System.out.println("Received message: " + incomingMessage);
+//
+//        // Example: Transform or look something up
+//        return "Processed result for: " + incomingMessage;
+//    }
+
+
 
 }

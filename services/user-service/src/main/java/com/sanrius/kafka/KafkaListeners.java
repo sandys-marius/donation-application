@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.Acknowledgment;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -55,5 +58,18 @@ public class KafkaListeners {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
+    }
+
+    @KafkaListener(id = "qux", topicPattern = "myTopic1")
+    public void listen(@Payload String foo,
+                       @Header(name = KafkaHeaders.RECEIVED_KEY, required = false) Integer key,
+                       @Header(KafkaHeaders.RECEIVED_PARTITION) int partition,
+                       @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
+                       @Header(KafkaHeaders.RECEIVED_TIMESTAMP) long timeStamp
+    ) {
+        log.info("Listen the request with the topic: {}", topic);
+        log.info("Payload: {}", foo);
+        log.info("KafkaHeaders.RECEIVED_KEY: {}", key);
+        log.info("KafkaHeaders.RECEIVED_TIMESTAMP: {}", timeStamp);
     }
 }
