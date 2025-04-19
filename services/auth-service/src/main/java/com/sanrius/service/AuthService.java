@@ -8,6 +8,8 @@ import com.sanrius.utils.LoginRequest;
 import com.sanrius.utils.RegisterRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.security.InvalidParameterException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +83,17 @@ public class AuthService {
 
     public AuthResponse login(@RequestBody LoginRequest loginRequest) {
         log.info("Starting to login a user");
+        User user = null;
+
+        try {
+            user = userRepository.findByEmail(loginRequest.getEmail())
+                    .orElseThrow(() -> new UserNotFoundException("User not found!"));
+        } catch (UserNotFoundException e) {
+            return AuthResponse.builder()
+                    .msg(e.getMessage())
+                    .build();
+        }
+
         // attempts to authenticate the passed Authentication object
         Authentication authentication = null;
         try {
@@ -93,13 +106,13 @@ public class AuthService {
             log.info("Authentication successful: {}", authentication);
         } catch (Exception e) {
             log.error("Authentication failed: {}", e.getMessage());
-            throw e; // rethrow
+            return AuthResponse.builder()
+                    .msg(e.getMessage())
+                    .build();
         }
 
         log.info("Authentication: {}", authentication);
 
-        var user = userRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("User not found!"));
 
         var accessToken = jwtService.generateToken(user);
         var refreshToken = refreshTokenService.createRefreshToken(user.getEmail());
