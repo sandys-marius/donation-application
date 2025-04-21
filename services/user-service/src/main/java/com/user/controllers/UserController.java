@@ -4,10 +4,17 @@ import com.user.kafka.KafkaProducerService;
 import com.user.model.User;
 import com.user.service.UserService;
 import com.user.utils.Payment;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.parser.Authorization;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -16,10 +23,12 @@ import java.util.List;
 @RequestMapping("/api/v1/user")
 public class UserController {
 
+    private final RestTemplate restTemplate;
     private final UserService userService;
     private final KafkaProducerService producerService;
 
-    public UserController(UserService userService, KafkaProducerService producerService) {
+    public UserController(RestTemplate restTemplate, UserService userService, KafkaProducerService producerService) {
+        this.restTemplate = restTemplate;
         this.userService = userService;
         this.producerService = producerService;
     }
@@ -45,5 +54,33 @@ public class UserController {
     @GetMapping("/test")
     public void testKafka() {
         producerService.checkPaymentServiceHealth();
+    }
+
+
+    @GetMapping("/testRestTemplate")
+    public void testRestTemplate(
+            @RequestHeader("Authorization") String auth,
+            HttpServletRequest request
+    ) {
+        log.info("Auth: {}", auth);
+        log.info("AuthType: {}", request.getAuthType());
+        log.info("RequestURI: {}", request.getRequestURI());
+        log.info("RequestURL: {}", request.getRequestURL());
+        log.info("ServletPath: {}", request.getServletPath());
+        log.info("Remote Address: {}", request.getRemoteAddr());
+        log.info("Request Headers: {}", request.getHeaderNames());
+
+
+
+//        String url = "http://localhost:8030/api/v1/user/" + 4;
+//
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setBearerAuth(auth);
+
+//        ResponseEntity<User> response = restTemplate.getForEntity (
+//                url,
+//                User.class
+//        );
+//        log.info("Response: {}", response);
     }
 }
