@@ -8,7 +8,9 @@ public class PaymentServiceApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(PaymentServiceApplication.class, args);
-		System.out.println("Sanduta & Mariusea cei mai bravoooo!");
 	}
+
+
+	// TODO: Modify the payments so they can provide basic info about the donations not just info like sessions ids
 
 }
