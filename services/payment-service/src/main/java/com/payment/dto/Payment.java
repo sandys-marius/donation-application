@@ -39,5 +39,5 @@ public class Payment {
     private LocalDateTime updatedAt;
 
     @Column(name = "user_id")
-    private Long userId;
+    private Integer userId;
 }

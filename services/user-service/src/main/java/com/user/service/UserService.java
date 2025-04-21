@@ -1,5 +1,7 @@
 package com.user.service;
 
+import com.auth.exception.UserNotFoundException;
+import com.auth.jwt.JwtUtils;
 import com.google.gson.Gson;
 import com.user.kafka.KafkaListeners;
 import com.user.kafka.KafkaProducerService;
@@ -8,9 +10,18 @@ import com.user.repository.UserRepository;
 import com.user.utils.Payment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -21,6 +32,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final KafkaProducerService producerService;
     private final KafkaListeners listener;
+    private final RestTemplate restTemplate;
+    private final JwtService jwtService;
 
     public static void sleep() {
         try {
@@ -62,18 +75,47 @@ public class UserService {
         return user.getUserId();
     }
 
-    public List<Payment> getUserDonationHistory(String userId) {
-        // 1. Make a request to the payment-service from which to get the donation-history
-        producerService.requestUserDonationHistory(userId);
+    public List<Payment> getUserDonationHistory(Integer userId, String auth) {
+        String jsonToken = getJWT(auth);
+        System.out.println("Token being sent: " + jsonToken);
 
-        List<Payment> payments = null;
-        do {
-            sleep();
-            payments = listener.getPaymentList();
-        } while (payments == null);
+        String email = jwtService.extractUsername(jsonToken);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new  UserNotFoundException("User not found. With the username: " + email));
+
+
+        if (!Objects.equals(userId, user.getUserId())) {
+            throw new RuntimeException("Invalid request. The searched history is from another user");
+        }
+
+        List<Payment> payments = new ArrayList<>();
+
+        String url = "http://payment-service/payments/donation-history/" + user.getUserId();
+
+        // 1. Make a request to the payment-service from which to get the donation-history
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(jsonToken);
+        HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+
+        ResponseEntity<List<Payment>> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                requestEntity,
+                new ParameterizedTypeReference<List<Payment>>() {}
+        );
+
+        payments = response.getBody();
 
         log.info("Got the payment history list in the service: {}", payments);
         return payments;
+    }
+
+    private String getJWT(String authorization) {
+        if (StringUtils.hasText(authorization) && authorization.startsWith("Bearer ")) {
+            return authorization.substring(7);
+        } else {
+            throw new RuntimeException("Invalid authorization header");
+        }
     }
 
 }

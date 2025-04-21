@@ -1,6 +1,6 @@
-package com.user.config.security;
+package com.payment.config.security;
 
-import com.user.filter.JwtAuthorizationFilter;
+import com.payment.filter.JwtAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 @EnableMethodSecurity
 @EnableWebSecurity
-public class SecurityConfigurationUserService {
+public class SecurityConfigurationsPaymentService {
 
     private final JwtAuthorizationFilter jwtAuthorizationFilter;
 
@@ -33,9 +33,8 @@ public class SecurityConfigurationUserService {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
-                ;
+        ;
 
         return http.build();
     }
-
 }

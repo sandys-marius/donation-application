@@ -7,6 +7,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 import java.util.function.Function;
 
 @Slf4j
@@ -28,6 +30,13 @@ public class JwtService {
         log.debug("Extracting the username {} from the token ", username);
         return username;
     }
+
+    @SuppressWarnings("unchecked")
+    public List<String> extractRoles(String token) {
+        Claims claims = extractAllClaims(token);
+        return (List<String>) claims.get("roles", List.class);
+    }
+
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
@@ -60,8 +69,11 @@ public class JwtService {
 
     // generate token using Jwt utility class and return token as String
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        extraClaims.put("role", userDetails.getAuthorities());
         log.info("Generating the JWT");
+
+        extraClaims.put("roles", userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList());
 
         return Jwts.builder()
                 .setClaims(extraClaims)

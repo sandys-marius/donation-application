@@ -1,4 +1,4 @@
-package com.payment.repositories;
+package com.payment.repository;
 
 import com.payment.dto.Payment;
 import org.springframework.data.jpa.repository.JpaRepository;

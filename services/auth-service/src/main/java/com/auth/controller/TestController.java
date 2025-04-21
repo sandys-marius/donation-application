@@ -13,6 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 @EnableMethodSecurity(securedEnabled = true)
 public class TestController {
 
+    @GetMapping("/test")
+    public String health() {
+        log.info("Somebody called the /health check in the AUTH-SERVICE");
+        return "The auth-service is up and running";
+    }
+
 //    @PreAuthorize("hasAuthority('ROLE_USER')")
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/user")

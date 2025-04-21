@@ -19,7 +19,7 @@ public class KafkaProducerService {
     private final PaymentService paymentService;
     private final Gson gson = new Gson();
 
-    public void sendUserDonationHistory(Long userId) {
+    public void sendUserDonationHistory(Integer userId) {
         List<Payment> usersDonationHistory = paymentService.getUsersDonationHistory(userId);
         log.info("Sending user donation history");
         kafkaTemplate.send("response-donation-history", usersDonationHistory);

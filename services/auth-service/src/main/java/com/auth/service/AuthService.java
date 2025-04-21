@@ -7,6 +7,7 @@ import com.auth.utils.AuthResponse;
 import com.auth.utils.LoginRequest;
 import com.auth.utils.RegisterRequest;
 import lombok.extern.slf4j.Slf4j;
+import com.auth.service.JwtService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;

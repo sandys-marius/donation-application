@@ -1,4 +1,4 @@
-package com.auth.service;
+package com.payment.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;

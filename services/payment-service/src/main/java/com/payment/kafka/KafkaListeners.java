@@ -28,7 +28,7 @@ public class KafkaListeners {
     @KafkaListener(topics = "request-donation-history", groupId = "groupId")
     public void getDonationHistoryRequest(String userId) {
         log.info("Got a donationHistoryRequest. Raw userId: {}", userId);
-        Long parsedUserId = Long.parseLong(gson.fromJson(userId, String.class));
+        Integer parsedUserId = Integer.parseInt(gson.fromJson(userId, String.class));
         log.info("Parsed userId: {}", parsedUserId);
         producerService.sendUserDonationHistory(parsedUserId);
     }

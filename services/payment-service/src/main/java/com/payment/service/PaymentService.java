@@ -2,7 +2,7 @@ package com.payment.service;
 
 import com.payment.dto.CheckoutRequest;
 import com.payment.dto.Payment;
-import com.payment.repositories.PaymentRepository;
+import com.payment.repository.PaymentRepository;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import lombok.extern.slf4j.Slf4j;
@@ -88,7 +88,7 @@ public class PaymentService {
      * @param userId used to identify the user whose info should be returned
      * @return the donation-history of the user
      */
-    public List<Payment> getUsersDonationHistory(Long userId) {
+    public List<Payment> getUsersDonationHistory(Integer userId) {
         List<Payment> donationHistoryList = paymentRepository.findAll().stream()
                 .filter(payment -> payment.getUserId().equals(userId))
                 .toList();
